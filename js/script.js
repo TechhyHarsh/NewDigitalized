@@ -49,34 +49,42 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   function openModal(project) {
-    const media = project.querySelector("img, video");
-    modalContent.innerHTML = "";
-    let clone;
-    if (media.tagName.toLowerCase() === "video") {
-      clone = document.createElement("video");
-      clone.src = media.src;
-      clone.controls = true;
-      clone.autoplay = true;
-      clone.loop = media.loop;          // Keep original loop setting
-      clone.muted = true;               // Must mute for autoplay
-      clone.playsInline = true;
-      clone.style.maxHeight = "80vh";
-      clone.style.maxWidth = "90vw";
-      modalContent.appendChild(clone);
-
-      // Explicitly play after append for autoplay reliability
-      clone.play().catch((err) => {
-        // Optional: console.log("Video autoplay prevented:", err);
-      });
-    } else if (media.tagName.toLowerCase() === "img") {
-      clone = document.createElement("img");
-      clone.src = media.src;
-      clone.alt = media.alt || "Project Image";
-      modalContent.appendChild(clone);
-    }
+  const youtubeURL = project.getAttribute("data-video");
+  if (youtubeURL) {
+    modalContent.innerHTML = `
+      <iframe width="100%" height="500" src="${youtubeURL}?autoplay=1&rel=0"
+      frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
     modal.classList.add("active");
     modal.setAttribute("aria-hidden", "false");
+    return;
   }
+
+  const media = project.querySelector("img, video");
+  modalContent.innerHTML = "";
+  let clone;
+  if (media.tagName.toLowerCase() === "video") {
+    clone = document.createElement("video");
+    clone.src = media.src;
+    clone.controls = true;
+    clone.autoplay = true;
+    clone.loop = media.loop;
+    clone.muted = true;
+    clone.playsInline = true;
+    clone.style.maxHeight = "80vh";
+    clone.style.maxWidth = "90vw";
+    modalContent.appendChild(clone);
+    clone.play().catch((err) => {});
+  } else if (media.tagName.toLowerCase() === "img") {
+    clone = document.createElement("img");
+    clone.src = media.src;
+    clone.alt = media.alt || "Project Image";
+    modalContent.appendChild(clone);
+  }
+
+  modal.classList.add("active");
+  modal.setAttribute("aria-hidden", "false");
+}
+
 
   function closeModal() {
     modal.classList.remove("active");
